@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>myMvvm</title>
+	<meta charset="utf-8">
+</head>
+<body>
+	<div id="message">
+	    <h1 lulu-text="title"></h1>
+	    <div lulu-show="show">看不见我看不见我</div>
+	    <h1 lulu-text="message"></h1>
+	    <input type="text" lulu-model="message"/>
+	</div>
+<script type="text/javascript" src="./js/mvvm.js"></script>
+<script type="text/javascript">
+	new mvvm({
+            el:'#message',
+            data: {
+                title: '简单的mvvm框架',
+                show: false,
+                message: 123123123
+            }
+	});
+</script>
+</body>
+</html>
