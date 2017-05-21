@@ -32,6 +32,7 @@ var myMvvm = {
         var text = node.getAttribute('lulu-text');
         var show = node.getAttribute('lulu-show');
         var model = node.getAttribute('lulu-model');
+        var lufor = node.getAttribute('lulu-for');
         var temp = {
             node: node
         };
@@ -48,10 +49,26 @@ var myMvvm = {
             temp.model = model;
             node.addEventListener('input', this.onchange.bind(this, model), false);
         }
+        if (lufor) {
+            temp.list = lufor.split(' ')[2];
+            temp.item = [];
+            temp.item.push(this.returnItem(node.innerText));
+        }
         return temp;
     },
     onchange: function (attr) {
         this.data[attr] = event.target.value;
+    },
+    returnItem: function(text) {
+        var reg = /\{{(.*)\}}/;
+        var str = text.match(reg)[1];
+        str = str.trim().split('.');
+        var newStr = [];
+        for(var i = 1;i < str.length; i++){
+            newStr.push(str[i]);
+        }
+        newStr = newStr.join('.');
+        return newStr;
     },
     judgeNull: function (value) {
         if (value === undefined || value === null || value === '') {
@@ -75,6 +92,17 @@ var myMvvm = {
             }
             if (this.judgeNull(item.model)) {
                 item.node.value = this.data[item.model] || '';
+            }
+            if (this.judgeNull(item.list)) {
+                var parentNode = item.node.parentNode;
+                var childNode = item.node.localName;
+                var dataNode = this.data[item.list];
+                parentNode.innerHTML = '';
+                for(var i = 0;i < dataNode.length; i++){
+                    var newElement = document.createElement(childNode);
+                    newElement.innerHTML = dataNode[i][item.item[0]];
+                    parentNode.appendChild(newElement);
+                }
             }
         }, this);
     },
