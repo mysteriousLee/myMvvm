@@ -3,6 +3,7 @@
 * v-text
 * v-show
 * v-model
+* v-for
 
 ## 技术实现
 ### 核心内容为数据与视图的双向绑定,基于ES5中的defineProperty()来实现的,通过检测数据的变化来通知对应的视图来进行变更。详细内容请看这篇博客
@@ -36,6 +37,11 @@ http://blog.csdn.net/shenmill/article/details/65441260
 	    <div lulu-show="show">hahaha</div>
 	    <h1 lulu-text="message"></h1>
 	    <input type="text" lulu-model="message"/>
+        <ul>
+            <li lulu-for="item in list">
+                {{ item.hobby }}
+            </li>
+        </ul>
 </div>
 ```
 
@@ -47,7 +53,13 @@ new mvvm({
             data: {
                 title: 'lalalalala',
                 show: false,
-                message: 111
+                message: 111,
+                list: [
+                    { name: 'lulu',age: 20,hobby: 'soccer'},
+                    { name: 'tom',age: 21,hobby: 'basketball'},
+                    { name: 'lucy',age: 22,hobby: 'swimming'},
+                    { name: 'susan',age: 20,hobby: 'pingpang'}
+                ]
             }
 });
 ```

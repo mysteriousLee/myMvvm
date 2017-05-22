@@ -27,6 +27,7 @@ var myMvvm = {
         this.cache = this.cache.map(function (node) {
             return this.paserNode(node);
         }, this);
+        console.log(this.cache);
     },
     paserNode: function (node) {
         var text = node.getAttribute('lulu-text');
@@ -52,7 +53,22 @@ var myMvvm = {
         if (lufor) {
             temp.list = lufor.split(' ')[2];
             temp.item = [];
-            temp.item.push(this.returnItem(node.innerText));
+            if(node.childNodes.length > 1){
+                for(var i = 0;i < node.childNodes.length; i++){
+                    if(node.childNodes[i].nodeName !== '#text'){
+                        var itemObj = {};
+                        itemObj.tag = node.childNodes[i].nodeName.toLowerCase();
+                        itemObj.text = this.returnItem(node.childNodes[i].innerText);
+                        temp.item.push(itemObj);
+                    }
+                }
+            } else{
+                console.log(node.childNodes);
+                var itemObj = {};
+                itemObj.tag = '';
+                itemObj.text = this.returnItem(node.childNodes[0].data);
+                temp.item.push(itemObj);
+            }  
         }
         return temp;
     },
@@ -64,8 +80,8 @@ var myMvvm = {
         var str = text.match(reg)[1];
         str = str.trim().split('.');
         var newStr = [];
-        for(var i = 1;i < str.length; i++){
-            newStr.push(str[i]);
+        for(var j = 1;j < str.length; j++){
+            newStr.push(str[j]);
         }
         newStr = newStr.join('.');
         return newStr;
@@ -94,14 +110,22 @@ var myMvvm = {
                 item.node.value = this.data[item.model] || '';
             }
             if (this.judgeNull(item.list)) {
+                console.log(item);
                 var parentNode = item.node.parentNode;
-                var childNode = item.node.localName;
                 var dataNode = this.data[item.list];
-                parentNode.innerHTML = '';
+                parentNode.removeChild(item.node);
                 for(var i = 0;i < dataNode.length; i++){
-                    var newElement = document.createElement(childNode);
-                    newElement.innerHTML = dataNode[i][item.item[0]];
-                    parentNode.appendChild(newElement);
+                    var localNode = document.createElement(item.node.localName);
+                    for(var j = 0;j < item.item.length; j++){
+                        if(item.item[j].tag != '') {
+                            var localChild = document.createElement(item.item[j].tag);
+                            localChild.innerHTML = dataNode[i][item.item[j].text];
+                            localNode.appendChild(localChild);
+                        }else{
+                            localNode.innerHTML = dataNode[i][item.item[j].text];
+                        }   
+                    }
+                    parentNode.appendChild(localNode);
                 }
             }
         }, this);
