@@ -4,10 +4,12 @@ function mvvm(params) {
 var myMvvm = {
 	el: null,
 	data: null,
+    methods: null,
 	cache: [],
 	init: function (params) {
 		this.el = document.querySelector(params.el);
 	    this.data = params.data;
+        this.methods = params.methods;
 	    this.compile(this.el);
         this.pasers();
         this.observe();
@@ -27,7 +29,7 @@ var myMvvm = {
         this.cache = this.cache.map(function (node) {
             return this.paserNode(node);
         }, this);
-        console.log(this.cache);
+        //console.log(this.cache);
     },
     paserNode: function (node) {
         var text = node.getAttribute('lulu-text');
@@ -40,17 +42,17 @@ var myMvvm = {
         if (text) {
             temp.text = text;
         }
-        if (show) {
+        else if (show) {
             temp.show = show;
         }
-        if (model) {
+        else if (model) {
             if(!this.data.hasOwnProperty(model)){
                 this.data[model] = '';
             }
             temp.model = model;
-            node.addEventListener('input', this.onchange.bind(this, model), false);
+            node.addEventListener('input', this.onChange.bind(this, model), false);
         }
-        if (lufor) {
+        else if (lufor) {
             temp.list = lufor.split(' ')[2];
             temp.item = [];
             if(node.childNodes.length > 1){
@@ -63,16 +65,28 @@ var myMvvm = {
                     }
                 }
             } else{
-                console.log(node.childNodes);
+                //console.log(node.childNodes);
                 var itemObj = {};
                 itemObj.tag = '';
                 itemObj.text = this.returnItem(node.childNodes[0].data);
                 temp.item.push(itemObj);
             }  
         }
+        else {
+            var allAttributes = node.attributes;
+            for(var i = 0;i < allAttributes.length; i++){
+                var reg = /^lulu-on:|^@/;
+                var attrName = allAttributes[i].name;
+                if(attrName.match(reg)){
+                    var eventName = attrName.split(':')[1];
+                    var bindEvent = allAttributes[i].value;
+                    node.addEventListener(eventName,this.methods[bindEvent],false);
+                }
+            }
+        }
         return temp;
     },
-    onchange: function (attr) {
+    onChange: function (attr) {
         this.data[attr] = event.target.value;
     },
     returnItem: function(text) {
@@ -110,7 +124,7 @@ var myMvvm = {
                 item.node.value = this.data[item.model] || '';
             }
             if (this.judgeNull(item.list)) {
-                console.log(item);
+                //console.log(item);
                 var parentNode = item.node.parentNode;
                 var dataNode = this.data[item.list];
                 parentNode.removeChild(item.node);

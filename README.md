@@ -1,9 +1,9 @@
 ## 一个简单的MVVM框架(仿照vue1.0版本)
 ## 目前功能
-* v-text
-* v-show
-* v-model
-* v-for
+* lulu-text
+* lulu-show
+* lulu-model
+* lulu-for
 
 ## 技术实现
 ### 核心内容为数据与视图的双向绑定,基于ES5中的defineProperty()来实现的,通过检测数据的变化来通知对应的视图来进行变更。详细内容请看这篇博客
@@ -33,16 +33,22 @@ http://blog.csdn.net/shenmill/article/details/65441260
 
 ```javascript
 <div id="message">
-	    <h1 lulu-text="title"></h1>
-	    <div lulu-show="show">hahaha</div>
-	    <h1 lulu-text="message"></h1>
-	    <input type="text" lulu-model="message"/>
+        <h1 lulu-text="title"></h1>
+        <span lulu-show="show">看不见我看不见我</span>
+        <h1 lulu-text="message"></h1>
+        <p lulu-for="item in list">
+            <span>{{ item.name }}</span>
+            <span>{{ item.age }}</span>
+        </p>    
         <ul>
             <li lulu-for="item in list">
                 {{ item.hobby }}
             </li>
         </ul>
-</div>
+        <div class="mouseDiv" lulu-on:mouseover="mouseEvent"></div>
+        <input type="text" lulu-model="message"/>
+        <input type="button" value="点我呀" lulu-on:click="clickEvent">
+    </div>
 ```
 
 #### js部分
@@ -51,17 +57,25 @@ http://blog.csdn.net/shenmill/article/details/65441260
 new mvvm({
             el:'#message',
             data: {
-                title: 'lalalalala',
+                title: '简单的mvvm框架',
                 show: false,
-                message: 111,
+                message: 123123123,
                 list: [
                     { name: 'lulu',age: 20,hobby: 'soccer'},
                     { name: 'tom',age: 21,hobby: 'basketball'},
                     { name: 'lucy',age: 22,hobby: 'swimming'},
                     { name: 'susan',age: 20,hobby: 'pingpang'}
                 ]
+            },
+            methods: {
+                clickEvent: function(){
+                    alert('hahaha');
+                },
+                mouseEvent: function(){
+                    alert('lalala');
+                }
             }
-});
+    });
 ```
 
 ### 后续功能持续开发中...

@@ -3,6 +3,13 @@
 <head>
 	<title>myMvvm</title>
 	<meta charset="utf-8">
+	<style type="text/css">
+	.mouseDiv{
+		height: 100px;
+		width: 200px;
+		background-color: red;
+	}
+	</style>
 </head>
 <body>
 	<div id="message">
@@ -18,7 +25,9 @@
 				{{ item.hobby }}
 			</li>
 	    </ul>
+	    <div class="mouseDiv" lulu-on:mouseover="mouseEvent"></div>
 	    <input type="text" lulu-model="message"/>
+	    <input type="button" value="点我呀" lulu-on:click="clickEvent">
 	</div>
 <script type="text/javascript" src="./js/mvvm.js"></script>
 <script type="text/javascript">
@@ -34,6 +43,14 @@
                 	{ name: 'lucy',age: 22,hobby: 'swimming'},
                 	{ name: 'susan',age: 20,hobby: 'pingpang'}
                 ]
+            },
+            methods: {
+            	clickEvent: function(){
+			        alert('hahaha');
+			    },
+			    mouseEvent: function(){
+			    	alert('lalala');
+			    }
             }
 	});
 </script>
