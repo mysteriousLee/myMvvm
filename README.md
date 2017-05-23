@@ -4,6 +4,7 @@
 * lulu-show
 * lulu-model
 * lulu-for
+* lulu-on:...(绑定事件)
 
 ## 技术实现
 ### 核心内容为数据与视图的双向绑定,基于ES5中的defineProperty()来实现的,通过检测数据的变化来通知对应的视图来进行变更。详细内容请看这篇博客
