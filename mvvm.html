@@ -3,29 +3,16 @@
 <head>
 	<title>myMvvm</title>
 	<meta charset="utf-8">
-	<style type="text/css">
-	.mouseDiv{
-		height: 100px;
-		width: 200px;
-		background-color: red;
-	}
-	</style>
 </head>
 <body>
 	<div id="message">
-	    <h1 lulu-text="title"></h1>
-	    <span lulu-show="show">看不见我看不见我</span>
 	    <h1 lulu-text="message"></h1>
-	    <p lulu-for="item in list">
-			<span>{{ item.name }}</span>
-			<span>{{ item.age }}</span>
-	    </p>	
+	    <span lulu-show="show">看不见我看不见我</span>
 	    <ul>
 			<li lulu-for="item in list">
-				{{ item.hobby }}
+				{{ item.name }}
 			</li>
 	    </ul>
-	    <div class="mouseDiv" lulu-on:mouseover="mouseEvent"></div>
 	    <input type="text" lulu-model="message"/>
 	    <input type="button" value="点我呀" lulu-on:click="clickEvent">
 	</div>
@@ -34,22 +21,22 @@
 	new mvvm({
             el:'#message',
             data: {
-                title: '简单的mvvm框架',
+                message: '这是一个todolist',
                 show: false,
-                message: 123123123,
                 list: [
-                	{ name: 'lulu',age: 20,hobby: 'soccer'},
-                	{ name: 'tom',age: 21,hobby: 'basketball'},
-                	{ name: 'lucy',age: 22,hobby: 'swimming'},
-                	{ name: 'susan',age: 20,hobby: 'pingpang'}
+                	{ name: 'lulu'},
+                	{ name: 'tom'},
+                	{ name: 'lucy'},
+                	{ name: 'susan'}
                 ]
             },
             methods: {
             	clickEvent: function(){
-			        alert('hahaha');
-			    },
-			    mouseEvent: function(){
-			    	alert('lalala');
+            		var newObj = {};
+            		newObj.name = this.data.message;
+            		this.data.list.push(newObj);
+                    var name = 'list';
+                    this.render(name);
 			    }
             }
 	});

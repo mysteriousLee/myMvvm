@@ -29,7 +29,6 @@ var myMvvm = {
         this.cache = this.cache.map(function (node) {
             return this.paserNode(node);
         }, this);
-        //console.log(this.cache);
     },
     paserNode: function (node) {
         var text = node.getAttribute('lulu-text');
@@ -55,6 +54,7 @@ var myMvvm = {
         else if (lufor) {
             temp.list = lufor.split(' ')[2];
             temp.item = [];
+            temp.parentNode = node.parentNode;
             if(node.childNodes.length > 1){
                 for(var i = 0;i < node.childNodes.length; i++){
                     if(node.childNodes[i].nodeName !== '#text'){
@@ -80,7 +80,7 @@ var myMvvm = {
                 if(attrName.match(reg)){
                     var eventName = attrName.split(':')[1];
                     var bindEvent = allAttributes[i].value;
-                    node.addEventListener(eventName,this.methods[bindEvent],false);
+                    node.addEventListener(eventName,this.methods[bindEvent].bind(this),false);
                 }
             }
         }
@@ -106,43 +106,83 @@ var myMvvm = {
         }
         return true;
     },
-    render: function () {
-        this.cache.forEach(function (item) {
-            if (this.judgeNull(item.text)) {
-                item.node.textContent = this.data[item.text] || '';
-            }
-            if (this.judgeNull(item.show)) {
-                var value;
-                if (this.data[item.show]) {
-                    value = 'block';
-                } else {
-                    value = 'none';
+    render: function (prop) {
+        if(prop){
+                this.cache.forEach(function (item) {
+                if (this.judgeNull(item.text) && item.text == prop) {
+                    item.node.textContent = this.data[item.text] || '';
+                    return;
                 }
-                item.node.style.display = value;
-            }
-            if (this.judgeNull(item.model)) {
-                item.node.value = this.data[item.model] || '';
-            }
-            if (this.judgeNull(item.list)) {
-                //console.log(item);
-                var parentNode = item.node.parentNode;
-                var dataNode = this.data[item.list];
-                parentNode.removeChild(item.node);
-                for(var i = 0;i < dataNode.length; i++){
-                    var localNode = document.createElement(item.node.localName);
-                    for(var j = 0;j < item.item.length; j++){
-                        if(item.item[j].tag != '') {
-                            var localChild = document.createElement(item.item[j].tag);
-                            localChild.innerHTML = dataNode[i][item.item[j].text];
-                            localNode.appendChild(localChild);
-                        }else{
-                            localNode.innerHTML = dataNode[i][item.item[j].text];
-                        }   
+                if (this.judgeNull(item.show) && item.show == prop) {
+                    var value;
+                    if (this.data[item.show]) {
+                        value = 'block';
+                    } else {
+                        value = 'none';
                     }
-                    parentNode.appendChild(localNode);
+                    item.node.style.display = value;
+                    return;
                 }
-            }
-        }, this);
+                if (this.judgeNull(item.model) && item.model == prop) {
+                    item.node.value = this.data[item.model] || '';
+                    return;
+                }
+                if (this.judgeNull(item.list) && item.list == prop) {
+                    var dataNode = this.data[item.list];
+                    item.parentNode.innerHTML = '';
+                    for(var i = 0;i < dataNode.length; i++){
+                        var localNode = document.createElement(item.node.localName);
+                        for(var j = 0;j < item.item.length; j++){
+                            if(item.item[j].tag != '') {
+                                var localChild = document.createElement(item.item[j].tag);
+                                localChild.innerHTML = dataNode[i][item.item[j].text];
+                                localNode.appendChild(localChild);
+                            }else{
+                                localNode.innerHTML = dataNode[i][item.item[j].text];
+                            }   
+                        }
+                        item.parentNode.appendChild(localNode);
+                    }
+                    return;
+                }
+            }, this);
+        } else {
+            this.cache.forEach(function (item) {
+                if (this.judgeNull(item.text)) {
+                    item.node.textContent = this.data[item.text] || '';
+                }
+                if (this.judgeNull(item.show)) {
+                    var value;
+                    if (this.data[item.show]) {
+                        value = 'block';
+                    } else {
+                        value = 'none';
+                    }
+                    item.node.style.display = value;
+                }
+                if (this.judgeNull(item.model)) {
+                    item.node.value = this.data[item.model] || '';
+                }
+                if (this.judgeNull(item.list)) {
+                    var parentNode = item.node.parentNode;
+                    var dataNode = this.data[item.list];
+                    parentNode.innerHTML = '';
+                    for(var i = 0;i < dataNode.length; i++){
+                        var localNode = document.createElement(item.node.localName);
+                        for(var j = 0;j < item.item.length; j++){
+                            if(item.item[j].tag != '') {
+                                var localChild = document.createElement(item.item[j].tag);
+                                localChild.innerHTML = dataNode[i][item.item[j].text];
+                                localNode.appendChild(localChild);
+                            }else{
+                                localNode.innerHTML = dataNode[i][item.item[j].text];
+                            }   
+                        }
+                        parentNode.appendChild(localNode);
+                    }
+                }
+            }, this);
+        }
     },
     observe: function () {
         var that = this;
@@ -155,7 +195,7 @@ var myMvvm = {
                 set: function (newVal) {
                     var temp = val;
                     val = newVal;
-                    that.render();
+                    that.render(prop);   
                 }
             });
         });
