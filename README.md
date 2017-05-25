@@ -29,27 +29,21 @@ http://blog.csdn.net/shenmill/article/details/65441260
 #### render
 #### 收到发布者的消息后进行视图的渲染,v-model和v-text是直接将最新的data赋给元素节点的value,v-show通过改变display的block和none来实现。
 
-### 具体使用
+### 具体实现了一个todolist
 #### html部分
 
 ```javascript
 <div id="message">
-        <h1 lulu-text="title"></h1>
-        <span lulu-show="show">看不见我看不见我</span>
         <h1 lulu-text="message"></h1>
-        <p lulu-for="item in list">
-            <span>{{ item.name }}</span>
-            <span>{{ item.age }}</span>
-        </p>    
+        <span lulu-show="show">看不见我看不见我</span>
         <ul>
-            <li lulu-for="item in list">
-                {{ item.hobby }}
+            <li lulu-for="item in list" lulu-on:click="removeElement">
+                {{ item.name }}
             </li>
         </ul>
-        <div class="mouseDiv" lulu-on:mouseover="mouseEvent"></div>
         <input type="text" lulu-model="message"/>
         <input type="button" value="点我呀" lulu-on:click="clickEvent">
-    </div>
+</div>
 ```
 
 #### js部分
@@ -58,26 +52,38 @@ http://blog.csdn.net/shenmill/article/details/65441260
 new mvvm({
             el:'#message',
             data: {
-                title: '简单的mvvm框架',
+                message: '这是一个todolist',
                 show: false,
-                message: 123123123,
                 list: [
-                    { name: 'lulu',age: 20,hobby: 'soccer'},
-                    { name: 'tom',age: 21,hobby: 'basketball'},
-                    { name: 'lucy',age: 22,hobby: 'swimming'},
-                    { name: 'susan',age: 20,hobby: 'pingpang'}
+                    { name: 'lulu'},
+                    { name: 'tom'},
+                    { name: 'lucy'},
+                    { name: 'susan'}
                 ]
             },
             methods: {
                 clickEvent: function(){
-                    alert('hahaha');
+                    var newObj = {};
+                    newObj.name = this.data.message;
+                    this.data.list.push(newObj);
+                    var name = 'list';
+                    this.render(name);
                 },
-                mouseEvent: function(){
-                    alert('lalala');
+                removeElement: function(){
+                    var childNodes = event.target.parentNode.childNodes;
+                    for(var i = 0;i < childNodes.length; i++){
+                        if(event.target == childNodes[i]){
+                            this.data.list.splice(i,1);
+                            var name = 'list';
+                            this.render(name);
+                            i--;
+                        }
+                    }  
                 }
             }
     });
 ```
-
+### 功能
+#### 点击button可以将input框里的内容加入到list列表中并且渲染出来,点击对应列表项可以将该项从列表中删除,不过实现方面还需要改进,js代码部分看起来好繁琐,还有render部分不够主动...
 ### 后续功能持续开发中...
 

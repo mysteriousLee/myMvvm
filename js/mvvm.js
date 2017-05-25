@@ -1,22 +1,22 @@
 function mvvm(params) {
-	myMvvm.init(params);
+    myMvvm.init(params);
 }
 var myMvvm = {
-	el: null,
-	data: null,
+    el: null,
+    data: null,
     methods: null,
-	cache: [],
-	init: function (params) {
-		this.el = document.querySelector(params.el);
-	    this.data = params.data;
+    cache: [],
+    init: function (params) {
+        this.el = document.querySelector(params.el);
+        this.data = params.data;
         this.methods = params.methods;
-	    this.compile(this.el);
+        this.compile(this.el);
         this.pasers();
         this.observe();
         this.render();
-	},
-	compile: function (nodes) {
-		if (nodes.nodeType == 1) {
+    },
+    compile: function (nodes) {
+        if (nodes.nodeType == 1) {
             this.cache.push(nodes);
             if (nodes.hasChildNodes()) {
                 nodes.childNodes.forEach(function (item) {
@@ -24,11 +24,12 @@ var myMvvm = {
                 }, this);
             }
         }
-	},
-	pasers: function () {
+    },
+    pasers: function () {
         this.cache = this.cache.map(function (node) {
             return this.paserNode(node);
         }, this);
+        console.log(this.cache);
     },
     paserNode: function (node) {
         var text = node.getAttribute('lulu-text');
@@ -40,9 +41,11 @@ var myMvvm = {
         };
         if (text) {
             temp.text = text;
+            temp = this.appendEvent(temp);
         }
         else if (show) {
             temp.show = show;
+            temp = this.appendEvent(temp);
         }
         else if (model) {
             if(!this.data.hasOwnProperty(model)){
@@ -50,6 +53,7 @@ var myMvvm = {
             }
             temp.model = model;
             node.addEventListener('input', this.onChange.bind(this, model), false);
+            temp = this.appendEvent(temp);
         }
         else if (lufor) {
             temp.list = lufor.split(' ')[2];
@@ -71,17 +75,26 @@ var myMvvm = {
                 itemObj.text = this.returnItem(node.childNodes[0].data);
                 temp.item.push(itemObj);
             }  
+            temp = this.appendEvent(temp);
         }
         else {
-            var allAttributes = node.attributes;
-            for(var i = 0;i < allAttributes.length; i++){
-                var reg = /^lulu-on:|^@/;
-                var attrName = allAttributes[i].name;
-                if(attrName.match(reg)){
-                    var eventName = attrName.split(':')[1];
-                    var bindEvent = allAttributes[i].value;
-                    node.addEventListener(eventName,this.methods[bindEvent].bind(this),false);
-                }
+            temp = this.appendEvent(temp);
+        }
+        return temp;
+    },
+    appendEvent: function(temp){
+        var node = temp.node;
+        temp.event = [];
+        var allAttributes = node.attributes;
+        for(var i = 0;i < allAttributes.length; i++){
+            var reg = /^lulu-on:|^@/;
+            var attrName = allAttributes[i].name;
+            if(attrName.match(reg)){
+                var bindEvent = {};
+                bindEvent.name = attrName.split(':')[1];
+                bindEvent.function = allAttributes[i].value;
+                temp.event.push(bindEvent);
+                node.addEventListener(bindEvent.name,this.methods[bindEvent.function].bind(this),false);
             }
         }
         return temp;
@@ -105,6 +118,15 @@ var myMvvm = {
             return false;
         }
         return true;
+    },
+    bindEvent: function(item,child){
+        //console.log(item);
+        if(item.event.length > 0) {
+            for(var i = 0;i < item.event.length; i++){
+                child.addEventListener(item.event[i].name,this.methods[item.event[i].function].bind(this),false);
+            }
+        }
+        return child;
     },
     render: function (prop) {
         if(prop){
@@ -139,8 +161,9 @@ var myMvvm = {
                                 localNode.appendChild(localChild);
                             }else{
                                 localNode.innerHTML = dataNode[i][item.item[j].text];
-                            }   
+                            }    
                         }
+                        localNode = this.bindEvent(item,localNode);  
                         item.parentNode.appendChild(localNode);
                     }
                     return;
@@ -176,8 +199,9 @@ var myMvvm = {
                                 localNode.appendChild(localChild);
                             }else{
                                 localNode.innerHTML = dataNode[i][item.item[j].text];
-                            }   
+                            } 
                         }
+                        localNode = this.bindEvent(item,localNode);  
                         parentNode.appendChild(localNode);
                     }
                 }

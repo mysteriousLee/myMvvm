@@ -9,8 +9,8 @@
 	    <h1 lulu-text="message"></h1>
 	    <span lulu-show="show">看不见我看不见我</span>
 	    <ul>
-			<li lulu-for="item in list">
-				{{ item.name }}
+			<li lulu-for="item in list" lulu-on:click="removeElement">
+                {{ item.name }}
 			</li>
 	    </ul>
 	    <input type="text" lulu-model="message"/>
@@ -37,7 +37,18 @@
             		this.data.list.push(newObj);
                     var name = 'list';
                     this.render(name);
-			    }
+			    },
+                removeElement: function(){
+                    var childNodes = event.target.parentNode.childNodes;
+                    for(var i = 0;i < childNodes.length; i++){
+                        if(event.target == childNodes[i]){
+                            this.data.list.splice(i,1);
+                            var name = 'list';
+                            this.render(name);
+                            i--;
+                        }
+                    }  
+                }
             }
 	});
 </script>
