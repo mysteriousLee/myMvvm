@@ -41,11 +41,9 @@ var myMvvm = {
         };
         if (text) {
             temp.text = text;
-            temp = this.appendEvent(temp);
         }
         else if (show) {
             temp.show = show;
-            temp = this.appendEvent(temp);
         }
         else if (model) {
             if(!this.data.hasOwnProperty(model)){
@@ -53,7 +51,6 @@ var myMvvm = {
             }
             temp.model = model;
             node.addEventListener('input', this.onChange.bind(this, model), false);
-            temp = this.appendEvent(temp);
         }
         else if (lufor) {
             temp.list = lufor.split(' ')[2];
@@ -69,17 +66,13 @@ var myMvvm = {
                     }
                 }
             } else{
-                //console.log(node.childNodes);
                 var itemObj = {};
                 itemObj.tag = '';
                 itemObj.text = this.returnItem(node.childNodes[0].data);
                 temp.item.push(itemObj);
             }  
-            temp = this.appendEvent(temp);
         }
-        else {
-            temp = this.appendEvent(temp);
-        }
+        temp = this.appendEvent(temp);
         return temp;
     },
     appendEvent: function(temp){
@@ -120,7 +113,6 @@ var myMvvm = {
         return true;
     },
     bindEvent: function(item,child){
-        //console.log(item);
         if(item.event.length > 0) {
             for(var i = 0;i < item.event.length; i++){
                 child.addEventListener(item.event[i].name,this.methods[item.event[i].function].bind(this),false);
