@@ -126,84 +126,41 @@ var myMvvm = {
         return child;
     },
     render: function (prop) {
-        if(prop){
-                this.cache.forEach(function (item) {
-                if (this.judgeNull(item.text) && item.text == prop) {
-                    item.node.textContent = this.data[item.text] || '';
-                    return;
+        this.cache.forEach(function (item) {
+            if ((this.judgeNull(item.text) && item.text == prop) || this.judgeNull(item.text)) {
+                item.node.textContent = this.data[item.text] || '';
+            }
+            if ((this.judgeNull(item.show) && item.show == prop) || this.judgeNull(item.show)){
+                var value;
+                if (this.data[item.show]) {
+                    value = 'block';
+                } else {
+                    value = 'none';
                 }
-                if (this.judgeNull(item.show) && item.show == prop) {
-                    var value;
-                    if (this.data[item.show]) {
-                        value = 'block';
-                    } else {
-                        value = 'none';
+                item.node.style.display = value;
+            }
+            if ((this.judgeNull(item.model) && item.model == prop) || this.judgeNull(item.model)) {
+                item.node.value = this.data[item.model] || '';
+            }
+            if ((this.judgeNull(item.list) && item.list == prop) || this.judgeNull(item.list)){
+                var dataNode = this.data[item.list];
+                item.parentNode.innerHTML = '';
+                for(var i = 0;i < dataNode.length; i++){
+                    var localNode = document.createElement(item.node.localName);
+                    for(var j = 0;j < item.item.length; j++){
+                        if(item.item[j].tag != '') {
+                            var localChild = document.createElement(item.item[j].tag);
+                            localChild.innerHTML = dataNode[i][item.item[j].text];
+                            localNode.appendChild(localChild);
+                        }else{
+                            localNode.innerHTML = dataNode[i][item.item[j].text];
+                        }    
                     }
-                    item.node.style.display = value;
-                    return;
+                    localNode = this.bindEvent(item,localNode);  
+                    item.parentNode.appendChild(localNode);
                 }
-                if (this.judgeNull(item.model) && item.model == prop) {
-                    item.node.value = this.data[item.model] || '';
-                    return;
-                }
-                if (this.judgeNull(item.list) && item.list == prop) {
-                    var dataNode = this.data[item.list];
-                    item.parentNode.innerHTML = '';
-                    for(var i = 0;i < dataNode.length; i++){
-                        var localNode = document.createElement(item.node.localName);
-                        for(var j = 0;j < item.item.length; j++){
-                            if(item.item[j].tag != '') {
-                                var localChild = document.createElement(item.item[j].tag);
-                                localChild.innerHTML = dataNode[i][item.item[j].text];
-                                localNode.appendChild(localChild);
-                            }else{
-                                localNode.innerHTML = dataNode[i][item.item[j].text];
-                            }    
-                        }
-                        localNode = this.bindEvent(item,localNode);  
-                        item.parentNode.appendChild(localNode);
-                    }
-                    return;
-                }
-            }, this);
-        } else {
-            this.cache.forEach(function (item) {
-                if (this.judgeNull(item.text)) {
-                    item.node.textContent = this.data[item.text] || '';
-                }
-                if (this.judgeNull(item.show)) {
-                    var value;
-                    if (this.data[item.show]) {
-                        value = 'block';
-                    } else {
-                        value = 'none';
-                    }
-                    item.node.style.display = value;
-                }
-                if (this.judgeNull(item.model)) {
-                    item.node.value = this.data[item.model] || '';
-                }
-                if (this.judgeNull(item.list)) {
-                    var parentNode = item.node.parentNode;
-                    var dataNode = this.data[item.list];
-                    parentNode.innerHTML = '';
-                    for(var i = 0;i < dataNode.length; i++){
-                        var localNode = document.createElement(item.node.localName);
-                        for(var j = 0;j < item.item.length; j++){
-                            if(item.item[j].tag != '') {
-                                var localChild = document.createElement(item.item[j].tag);
-                                localChild.innerHTML = dataNode[i][item.item[j].text];
-                                localNode.appendChild(localChild);
-                            }else{
-                                localNode.innerHTML = dataNode[i][item.item[j].text];
-                            } 
-                        }
-                        localNode = this.bindEvent(item,localNode);  
-                        parentNode.appendChild(localNode);
-                    }
-                }
-            }, this);
-        }
+            }
+        }, this);
     },
     observe: function () {
         var that = this;
