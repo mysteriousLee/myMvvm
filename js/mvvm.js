@@ -6,6 +6,7 @@ var myMvvm = {
     data: null,
     methods: null,
     cache: [],
+    changrVal: null,
     init: function (params) {
         this.el = document.querySelector(params.el);
         this.data = params.data;
@@ -75,6 +76,10 @@ var myMvvm = {
         temp = this.appendEvent(temp);
         return temp;
     },
+    allFunction: function(callback){
+        this.methods[callback].call(this);
+        this.render(this.changrVal);
+    },
     appendEvent: function(temp){
         var node = temp.node;
         temp.event = [];
@@ -87,7 +92,7 @@ var myMvvm = {
                 bindEvent.name = attrName.split(':')[1];
                 bindEvent.function = allAttributes[i].value;
                 temp.event.push(bindEvent);
-                node.addEventListener(bindEvent.name,this.methods[bindEvent.function].bind(this),false);
+                node.addEventListener(bindEvent.name,this.allFunction.bind(this,bindEvent.function),false);
             }
         }
         return temp;
@@ -115,7 +120,7 @@ var myMvvm = {
     bindEvent: function(item,child){
         if(item.event.length > 0) {
             for(var i = 0;i < item.event.length; i++){
-                child.addEventListener(item.event[i].name,this.methods[item.event[i].function].bind(this),false);
+                 child.addEventListener(item.event[i].name,this.allFunction.bind(this,item.event[i].function).bind(this),false);
             }
         }
         return child;
@@ -205,11 +210,13 @@ var myMvvm = {
         Object.keys(this.data).forEach(function (prop) {
             var val = that.data[prop];
             Object.defineProperty(that.data, prop, {
+                enumerable: true,
+                configurable: true,
                 get: function () {
+                    that.changrVal = prop;
                     return val;
                 },
                 set: function (newVal) {
-                    var temp = val;
                     val = newVal;
                     that.render(prop);   
                 }

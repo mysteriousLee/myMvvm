@@ -66,17 +66,12 @@ new mvvm({
                     var newObj = {};
                     newObj.name = this.data.message;
                     this.data.list.push(newObj);
-                    var name = 'list';
-                    this.render(name);
                 },
                 removeElement: function(){
                     var childNodes = event.target.parentNode.childNodes;
                     for(var i = 0;i < childNodes.length; i++){
                         if(event.target == childNodes[i]){
                             this.data.list.splice(i,1);
-                            var name = 'list';
-                            this.render(name);
-                            i--;
                         }
                     }  
                 }
@@ -84,6 +79,9 @@ new mvvm({
     });
 ```
 ### 功能
-#### 点击button可以将input框里的内容加入到list列表中并且渲染出来,点击对应列表项可以将该项从列表中删除,不过实现方面还需要改进,js代码部分看起来好繁琐,还有render部分不够主动...
+#### 点击button可以将input框里的内容加入到list列表中并且渲染出来,点击对应列表项可以将该项从列表中删除,不过实现方面还需要改进,js代码部分看起来好繁琐...
+
+### 踩过的坑
+#### defineProperty中set方法是在当这个值被重新赋值的时候调用的，如果改变其中的某个值是不会执行的，所以当我利用事件部分给data里面的list增删值时是不会被执行set部分也就是不会被执行render函数的，所以我给所有的事件绑定函数先调用了一个allFunction函数，在里面再执行callback，其中给get函数那里设置了一个变量changrVal表示当前操作的变量，然后在里面根据哪一块值修改再渲染哪一块的值。
 ### 后续功能持续开发中...
 

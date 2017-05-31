@@ -32,19 +32,15 @@
             },
             methods: {
             	clickEvent: function(){
-            		var newObj = {};
-            		newObj.name = this.data.message;
-            		this.data.list.push(newObj);
-                    var name = 'list';
-                    this.render(name);
+                    var newObj = {};
+                    newObj.name = this.data.message;
+                    this.data.list.push(newObj);
 			    },
                 removeElement: function(){
                     var childNodes = event.target.parentNode.childNodes;
                     for(var i = 0;i < childNodes.length; i++){
                         if(event.target == childNodes[i]){
                             this.data.list.splice(i,1);
-                            var name = 'list';
-                            this.render(name);
                         }
                     }  
                 }
